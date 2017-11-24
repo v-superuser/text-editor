@@ -1,7 +1,7 @@
 # Makefile for the whole of the backend server
 
 CC?=gcc
-CFLAGS?=-g -O2
+CFLAGS?=-g
 
 CFLAGS:=$(CFLAGS)
 CPPFLAGS:=-I../include -Iinclude/
