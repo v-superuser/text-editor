@@ -39,7 +39,7 @@ struct editor_buf* editor_buf_new(const char *name) {
         return NULL;
     }
     if (!backend->new) {
-        fprintf(stderr, "[error]: Opening new buffer not yet implemented for backend: '%s'\n"
+        fprintf(stderr, "[error]: Opening new empty buffer not yet implemented for backend: '%s'\n"
                         "Please file an issue at %s\n", name, ORIGIN_REPO_URL);
         return NULL;
     }
@@ -58,7 +58,7 @@ struct editor_buf* editor_buf_new_with_str(const char *name, const char *str) {
         return NULL;
     }
     if (!backend->new_with_str) {
-        fprintf(stderr, "[error]: Opening new buffer not yet implemented for backend: '%s'\n"
+        fprintf(stderr, "[error]: Opening buffer with string not yet implemented for backend: '%s'\n"
                         "Please file an issue at %s\n", name, ORIGIN_REPO_URL);
         return NULL;
     }

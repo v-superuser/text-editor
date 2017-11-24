@@ -21,9 +21,9 @@ static void _close(struct editor_buf *buf);
 struct editor_backend editor_backend_rope = {
     .name = "rope",
     .desc = "implementation of the rope data structure as a text editing backend",
-    .new = NULL,
-    .new_with_str = NULL,
-    .close = NULL
+    .new = _new,
+    .new_with_str = _new_with_str,
+    .close = _close
 };
 
 
