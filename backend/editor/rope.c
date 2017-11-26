@@ -16,6 +16,8 @@
 // Forward declarations
 static struct editor_buf* _new();
 static struct editor_buf* _new_with_str(const char *str);
+static size_t _len(const struct editor_buf *buf);
+static size_t _get_str(const struct editor_buf *buf, size_t from, size_t len, char *data);
 static void _close(struct editor_buf *buf);
 
 struct editor_backend editor_backend_rope = {
@@ -23,6 +25,9 @@ struct editor_backend editor_backend_rope = {
     .desc = "implementation of the rope data structure as a text editing backend",
     .new = _new,
     .new_with_str = _new_with_str,
+    .len = _len,
+    .get_str = _get_str,
+    .get_lines = NULL,
     .close = _close
 };
 
@@ -58,6 +63,28 @@ static unsigned _rope_node_height(const struct rope_node *node) {
         return 0;
     case ROPE_NODE_TYPE_NODE:
         return node->data.node.height;
+    }
+}
+
+// Get string content for node and children
+static void _rope_node_get_str(const struct rope_node *node, size_t from, size_t to, char *data) {
+    size_t llen;
+    switch (node->type) {
+    case ROPE_NODE_TYPE_LEAF:
+        memcpy(data, node->data.leaf.str + from, to - from);
+        return;
+    case ROPE_NODE_TYPE_NODE:
+        llen = node->data.node.l->len;
+        if (from >= llen) {
+            _rope_node_get_str(node->data.node.r, from - llen, to - llen, data);
+            return;
+        }
+        if (to <= llen) {
+            _rope_node_get_str(node->data.node.l, from, to, data);
+            return;
+        }
+        _rope_node_get_str(node->data.node.l, from, llen, data);
+        _rope_node_get_str(node->data.node.r, 0, to - llen, data + llen);
     }
 }
 
@@ -142,4 +169,25 @@ static void _close(struct editor_buf *buf) {
         _rope_node_free(node);
     }
     free(buf);
+}
+
+// Get the length of the buffer
+static size_t _len(const struct editor_buf *buf) {
+    struct rope_node *root = (struct rope_node*) buf->data;
+    return root->len;
+}
+
+// Get the required string content
+static size_t _get_str(const struct editor_buf *buf, size_t from, size_t len, char *data) {
+        size_t ret, buflen;
+        buflen = _len(buf);
+        if (from >= buflen) {
+            return 0;
+        }
+        if (from + len > buflen) {
+            len = buflen - from;
+        }
+        _rope_node_get_str((const struct rope_node*) buf->data, from, from + len, data);
+        ret = buflen - from;
+        return ret;
 }
