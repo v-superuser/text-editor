@@ -17,6 +17,9 @@ struct editor_backend {
 	struct editor_buf* (*new) ();				            // New empty buffer
 	struct editor_buf* (*new_with_str) (const char *str);	// New buffer with str
     void (*close) (struct editor_buf *buf);                 // Clean up resources
+    size_t (*len) (const struct editor_buf *buf);           // Get length of buffer
+    size_t (*get_str) (const struct editor_buf *buf, size_t from, size_t len, char *data);
+    size_t (*get_lines) (const struct editor_buf *buf, size_t from, size_t num, char **data, size_t *data_len);
 };
 
 // Define the editor buffer structure
