@@ -13,6 +13,7 @@
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <string.h>
+#include <signal.h>
 
 /*** defines ***/
 
@@ -434,6 +435,12 @@ void editorProcessKeypress() {
 	}
 }
 
+void siganlHandler(int signal) {
+	if (signal == SIGWINCH) {
+	    getWindowSize(&E.screenrows, &E.screencols);
+	}
+}
+
 /*** init ***/
 
 void initEditor() {
@@ -447,9 +454,11 @@ void initEditor() {
 	if (getWindowSize(&E.screenrows, &E.screencols) == -1) {
 		die("getWindowSize");
 	}
+}	
 
 int main(int argc, char *argv[]) {
 	enableRawMode();
+	signal(SIGWINCH, siganlHandler);
 	initEditor();
 	if(argc >= 2) {
 		editorOpen(argv[1]);
