@@ -435,11 +435,9 @@ void editorProcessKeypress() {
 	}
 }
 
-void SiganlHandler(int SignalCaught)
-{
-	if(SignalCaught == SIGWINCH)
-	{
-		getWindowSize(&E.screenrows,&E.screencols);
+void siganlHandler(int signal) {
+	if (signal == SIGWINCH) {
+	    getWindowSize(&E.screenrows, &E.screencols);
 	}
 }
 
@@ -460,7 +458,7 @@ void initEditor() {
 
 int main(int argc, char *argv[]) {
 	enableRawMode();
-	signal(SIGWINCH,SiganlHandler);
+	signal(SIGWINCH, siganlHandler);
 	initEditor();
 	if(argc >= 2) {
 		editorOpen(argv[1]);
